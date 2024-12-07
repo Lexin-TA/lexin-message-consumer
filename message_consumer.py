@@ -1,4 +1,6 @@
+import logging
 import os
+import time
 
 import pika
 import json
@@ -6,6 +8,17 @@ import json
 from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
 from openai import OpenAI
+
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,  # Set the log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.StreamHandler(),  # Log to console
+    ]
+)
+
 
 # Load environment variables.
 load_dotenv()
@@ -30,9 +43,12 @@ es_client = Elasticsearch(
     hosts=ELASTICSEARCH_URL,
     api_key=ELASTICSEARCH_API_KEY
 )
+logging.info("Initialized elasticsearch client.")
+
 
 # Initialize OpenAI client.
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
+logging.info("Initialized OpenAI client.")
 
 
 def search_elasticsearch(query, size=5):
@@ -213,7 +229,8 @@ def retrieval_augmented_generation(query, documents):
 
 def process_message(message):
     query = message['question']
-    print("Processing question:", query)
+    logging.info("Processing question: %s", query)
+    start_time = time.time()
 
     # Retrieve relevant documents.
     documents = search_elasticsearch(query)
@@ -223,7 +240,10 @@ def process_message(message):
 
     # Prepare response.
     processed_message = {"answer": inference}
-    print("Answered question:", query)
+    stop_time = time.time()
+    exec_time = stop_time - start_time
+
+    logging.info("Answered question: %s in %.2f seconds ", query, exec_time)
 
     return processed_message
 
@@ -256,7 +276,7 @@ def consume_messages():
     channel.basic_qos(prefetch_count=1)
     channel.basic_consume(queue=RABBITMQ_QUEUE, on_message_callback=callback)
 
-    print("Waiting for messages. To exit press CTRL+C")
+    logging.info("Waiting for messages. To exit press CTRL+C")
     channel.start_consuming()
 
 
