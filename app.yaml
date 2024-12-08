@@ -12,7 +12,7 @@ runtime_config:
 env: flex
 
 # Specify command to start the application.
-entrypoint: python main.py
+entrypoint: python message_consumer.py
 
 # Specify resource to be used for instances.
 resources:
