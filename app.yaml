@@ -1,0 +1,45 @@
+# Specify service name.
+service : message-consumer
+
+# Specify runtime environment.
+runtime: python
+
+# Use ubuntu22 with latest python version.
+runtime_config:
+    operating_system: "ubuntu22"
+
+# Specify flexible environment to enable websockets.
+env: flex
+
+# Specify command to start the application.
+entrypoint: python main.py
+
+# Specify resource to be used for instances.
+resources:
+  cpu: 1
+  memory_gb: 4.4
+  disk_size_gb: 10
+
+# Specify autoscaling of instances.
+automatic_scaling:
+  min_num_instances: 1
+  max_num_instances: 2
+
+# Set environment variables.
+env_variables:
+  ELASTICSEARCH_URL: $ELASTICSEARCH_URL
+  ELASTICSEARCH_API_KEY: $ELASTICSEARCH_API_KEY
+  ELASTICSEARCH_USERNAME: $ELASTICSEARCH_USERNAME
+  ELASTICSEARCH_PASSWORD: $ELASTICSEARCH_PASSWORD
+  ELASTICSEARCH_LEGAL_DOCUMENT_INDEX: $ELASTICSEARCH_LEGAL_DOCUMENT_INDEX
+
+  RABBITMQ_HOST: $RABBITMQ_HOST
+  RABBITMQ_PORT: $RABBITMQ_PORT
+  RABBITMQ_USER: $RABBITMQ_USER
+  RABBITMQ_PASS: $RABBITMQ_PASS
+
+  RABBITMQ_QUEUE: $RABBITMQ_QUEUE
+  RABBITMQ_EXCHANGE: $RABBITMQ_EXCHANGE
+  RABBITMQ_ROUTING_KEY: $RABBITMQ_ROUTING_KEY
+
+  OPENAI_API_KEY: OPENAI_API_KEY
